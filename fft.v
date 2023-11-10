@@ -13,11 +13,6 @@ always@(x,y,flag)
     end
 endmodule
 
-module stage2;
-  
-endmodule
-
-
 module main(
   input [15:0] in0_real, input [15:0] in0_imag,
   input [15:0] in1_real, input [15:0] in1_imag,
