@@ -1,74 +1,3 @@
-module multiplier(
-    input [15:0] b_real, 
-    input [15:0] b_imag,
-    input flag,
-    output wire [15:0] result_real,
-    output wire [15:0] result_imag
-);
-    reg [15:0] result_1         ; reg[15:0] result_2;
-    reg [31:0] result_real_temp ; reg[31:0] result_imag_temp;
-    reg  [31:0] result_temp;
-    always@(flag)
-      begin 
-        if(flag) // flag 1 => multiplication with W8^1 = 0.707 - j0.707
-          begin
-            result_1    = b_imag + b_real;
-            result_2    = b_imag - b_real;
-            if(result_1[15] == 1'b1)
-              begin
-                result_1 = -(result_1);
-                result_real_temp = 16'b0000000010110100 * (result_1);
-                result_real_temp = -(result_real_temp);
-              end
-            else
-              begin
-                result_real_temp = 16'b0000000010110100 * (result_1);
-              end
-            if(result_2[15] == 1'b1)
-              begin
-                result_2 = -(result_2);
-                result_imag_temp = 16'b0000000010110100 * (result_2);
-                result_imag_temp = -(result_imag_temp);
-              end
-            else
-              begin
-                result_imag_temp = 16'b0000000010110100 * (result_2);
-              end
-          end
-        
-        
-        else // flag 0 => multiplication with W8^3 = -(0.707 + j0.707)
-         begin
-         result_1    =  b_imag - b_real;
-         result_2    = -(b_imag + b_real);
-            if(result_1[15] == 1'b1)
-              begin
-                result_1 = -(result_1);
-                result_real_temp = 16'b0000000010110100 * (result_1);
-                result_real_temp = -(result_real_temp);
-
-              end
-            else
-              begin
-                result_real_temp = 16'b0000000010110100 * (result_1);
-              end
-            if(result_2[15] == 1'b1)
-              begin
-                result_2 = -(result_2);
-                result_imag_temp = 16'b0000000010110100 * (result_2);
-                result_imag_temp = -(result_imag_temp);
-              end
-            else
-              begin
-                result_imag_temp = 16'b0000000010110100 * (result_2);
-              end
-          end
-
-      end
-    assign result_real      = result_real_temp[23:8];
-    assign result_imag      = result_imag_temp[23:8]; 
-endmodule
-
 module main(
   input [15:0]  in0_real  , input [15:0] in0_imag,
   input [15:0]  in1_real  , input [15:0] in1_imag,
@@ -94,6 +23,7 @@ module main(
   reg [15:0] i_real [0:7];   // Declare i_real as an array of registers to store real part of stage 3 results
   reg [15:0] i_imag [0:7];   // Declare i_imag as an array of registers to store imag part of stage 3 results
 
+  reg [15:0] temp1,temp2,temp3,temp4;
   reg [15:0] h5_prime_real;  // to store real part of h[5] * (W8 ^ 1)
   reg [15:0] h5_prime_imag;  // to store imag part of h[5] * (W8 ^ 1)
   reg [15:0] h7_prime_real;  // to store real part of h[7] * (W8 ^ 3)
@@ -144,6 +74,14 @@ module main(
       h_real[7] = g_real[5] + (-(g_imag[7]));   // h7_real = g5_real + (j*g7_real)
       h_imag[7] = g_imag[5] + g_real[7];        // h7_imag = g5_imag + (j*g7_imag)
 
+      temp1 = h_real[5] + h_imag[5];
+      h5_prime_real = temp1 * 16'b0000000010110100;
+      temp2 = h_imag[5] - h_real[5];
+      h5_prime_imag = temp2 * 16'b0000000010110100;
+      temp3 = h_imag[7] - h_real[7];
+      h7_prime_real = temp3 * 16'b0000000010110100;
+      temp4 = h_imag[7] + h_real[7];
+      h7_prime_imag = (-temp4) * 16'b0000000010110100;
       multiplier m1(.b_real(h_real[5]) , .b_imag(h_imag[5]) , .flag(1) , .result_real(h5_prime_real) , .result_imag(h5_prime_imag));  // h[5]_prime =  h[5] * (W8 ^ 1)
       multiplier m2(.b_real(h_real[7]) , .b_imag(h_imag[7]) , .flag(0) , .result_real(h7_prime_real) , .result_imag(h7_prime_imag));  // h[7]_prime =  h[7] * (W8 ^ 3)
 
