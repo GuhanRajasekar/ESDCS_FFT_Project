@@ -40,27 +40,27 @@ module multiplier(
         
         else // flag = 0
          begin
-         assign result_3    =  b_imag - b_real;
-         assign result_4    = -(b_imag + b_real);
-            if(result_3[15] == 1'b1)
+         assign result_1    =  b_imag - b_real;
+         assign result_2    = -(b_imag + b_real);
+            if(result_1[15] == 1'b1)
               begin
-                assign result_3 = -(result_3);
-                assign result_real_temp = 16'b0000000010110100 * (result_3);
+                assign result_1 = -(result_1);
+                assign result_real_temp = 16'b0000000010110100 * (result_1);
                 assign result_real_temp = -(result_real_temp);
               end
             else
               begin
-                assign result_real_temp = 16'b0000000010110100 * (result_3);
+                assign result_real_temp = 16'b0000000010110100 * (result_1);
               end
-            if(result_4[15] == 1'b1)
+            if(result_2[15] == 1'b1)
               begin
-                assign result_4 = -(result_4);
-                assign result_imag_temp = 16'b0000000010110100 * (result_4);
+                assign result_2 = -(result_2);
+                assign result_imag_temp = 16'b0000000010110100 * (result_2);
                 assign result_imag_temp = -(result_imag_temp);
               end
             else
               begin
-                assign result_imag_temp = 16'b0000000010110100 * (result_4);
+                assign result_imag_temp = 16'b0000000010110100 * (result_2);
               end
           end
 
