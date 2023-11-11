@@ -1,3 +1,4 @@
+// stage1 module  performs addition if flag = 1 and subtraction if flag = 0
 module stage1(
   input [15:0] x,
   input [15:0] y,
@@ -13,7 +14,6 @@ always@(x,y,flag)
     end
 endmodule
 
-// file to practise multiplication in verilog
 module multiplier(
     input [15:0] b_real, 
     input [15:0] b_imag,
@@ -21,12 +21,12 @@ module multiplier(
     output wire [15:0] result_real,
     output wire [15:0] result_imag
 );
-    reg [15:0] result_1     ; reg[15:0] result_2; reg[15:0] result_3; reg[15:0] result_4;
+    reg [15:0] result_1         ; reg[15:0] result_2;
     reg [31:0] result_real_temp ; reg[31:0] result_imag_temp;
     reg  [31:0] result_temp;
     always@(flag)
       begin 
-        if(flag)
+        if(flag) // flag 1 => multiplication with W8^1 = 0.707 - j0.707
           begin
             assign result_1    = b_imag + b_real;
             assign result_2    = b_imag - b_real;
@@ -53,7 +53,7 @@ module multiplier(
           end
         
         
-        else // flag = 0
+        else // flag 0 => multiplication with W8^3 = -(0.707 + j0.707)
          begin
          assign result_1    =  b_imag - b_real;
          assign result_2    = -(b_imag + b_real);
@@ -149,8 +149,8 @@ module main(
   stage1 inst_h7_real (.x(g_real[5]), .y(-(g_imag[7])), .flag(1), .z(h_real[7]));  // h7_real = g5_real + (j*g7_real)
   stage1 inst_h7_imag (.x(g_imag[5]), .y(g_real[7]),    .flag(1), .z(h_imag[7]));  // h7_imag = g5_imag + (j*g7_imag)
 
-  multiplier m1(.b_real(h_real[5]) , .b_imag(h_imag[5]) , .flag(1) , .result_real(h5_prime_real) , .result_imag(h5_prime_imag));  // to generate h[5] * (W8 ^ 1)
-  multiplier m2(.b_real(h_real[7]) , .b_imag(h_imag[7]) , .flag(0) , .result_real(h7_prime_real) , .result_imag(h7_prime_imag));  // to generate h[7] * (W8 ^ 3)
+  multiplier m1(.b_real(h_real[5]) , .b_imag(h_imag[5]) , .flag(1) , .result_real(h5_prime_real) , .result_imag(h5_prime_imag));  // h[5]_prime =  h[5] * (W8 ^ 1)
+  multiplier m2(.b_real(h_real[7]) , .b_imag(h_imag[7]) , .flag(0) , .result_real(h7_prime_real) , .result_imag(h7_prime_imag));  // h[7]_prime =  h[7] * (W8 ^ 3)
 
   stage1 inst_i0_real (.x(h_real[0]), .y(h_real[4]),     .flag(1), .z(i_real[0]));  // i0_real = h0_real + h4_real
   stage1 inst_i0_imag (.x(h_imag[0]), .y(h_imag[4]),     .flag(1), .z(i_imag[0]));  // i0_imag = h0_imag + h4_imag
@@ -181,5 +181,5 @@ module main(
      out6_real = i_real[0]; out6_imag = i_imag[0];
      out7_real = i_real[0]; out7_imag = i_imag[0];
    end
-   
+
 endmodule
