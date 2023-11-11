@@ -14,7 +14,7 @@ module main(
   output [15:0] out4_real , output [15:0] out4_imag,
   output [15:0] out5_real , output [15:0] out5_imag,
   output [15:0] out6_real , output [15:0] out6_imag,
-  output [15:0] out7_real , output [15:0] out6_imag,
+  output [15:0] out7_real , output [15:0] out7_imag
 );
   reg [15:0] g_real [0:7];   // Declare g_real as an array of registers to store real part of stage 1 results
   reg [15:0] g_imag [0:7];   // Declare g_imag as an array of registers to store imag part of stage 1 results
@@ -24,10 +24,15 @@ module main(
   reg [15:0] i_imag [0:7];   // Declare i_imag as an array of registers to store imag part of stage 3 results
 
   reg [15:0] temp1,temp2,temp3,temp4;
-  reg [15:0] h5_prime_real;  // to store real part of h[5] * (W8 ^ 1)
-  reg [15:0] h5_prime_imag;  // to store imag part of h[5] * (W8 ^ 1)
-  reg [15:0] h7_prime_real;  // to store real part of h[7] * (W8 ^ 3)
-  reg [15:0] h7_prime_imag;  // to store imag part of h[7] * (W8 ^ 3)
+  reg [31:0] h5_prime_real;  // 32 bit register to store real part of h[5] * (W8 ^ 1)
+  reg [31:0] h5_prime_imag;  // 32 bit register to store imag part of h[5] * (W8 ^ 1)
+  reg [31:0] h7_prime_real;  // 32 bit register to store real part of h[7] * (W8 ^ 3)
+  reg [31:0] h7_prime_imag;  // 32 bit register to store imag part of h[7] * (W8 ^ 3)
+
+  reg [15:0] h5_prime_real_16;  // 16 bit register to store real part of h[5] * (W8 ^ 1)
+  reg [15:0] h5_prime_imag_16;  // 16 bit register to store imag part of h[5] * (W8 ^ 1)
+  reg [15:0] h7_prime_real_16;  // 16 bit register to store real part of h[7] * (W8 ^ 3)
+  reg [15:0] h7_prime_imag_16;  // 16 bit register to store imag part of h[7] * (W8 ^ 3)
 
   assign out0_real = i_real[0]; assign out0_imag = i_imag[0];
   assign out1_real = i_real[0]; assign out1_imag = i_imag[0];
@@ -75,30 +80,75 @@ module main(
       h_imag[7] = g_imag[5] + g_real[7];        // h7_imag = g5_imag + (j*g7_imag)
 
       temp1 = h_real[5] + h_imag[5];
-      h5_prime_real = temp1 * 16'b0000000010110100;
       temp2 = h_imag[5] - h_real[5];
-      h5_prime_imag = temp2 * 16'b0000000010110100;
       temp3 = h_imag[7] - h_real[7];
-      h7_prime_real = temp3 * 16'b0000000010110100;
-      temp4 = h_imag[7] + h_real[7];
-      h7_prime_imag = (-temp4) * 16'b0000000010110100;
+      temp4 = -(h_imag[7] + h_real[7]);
+      
+
+          if(temp1[15] == 1'b1)
+            begin
+              temp1 = -(temp1);
+              h5_prime_real = temp1 * 16'b0000000010110100;
+              h5_prime_real = -(h5_prime_real);
+            end
+          else
+            begin
+              h5_prime_real = temp1 * 16'b0000000010110100;
+            end
+              h5_prime_real_16 = h5_prime_real[23:8];
+          
+          if(temp2[15] == 1'b1)
+            begin
+              temp2 = -(temp2);
+              h5_prime_imag = temp2 * 16'b0000000010110100;
+              h5_prime_imag = -(h5_prime_imag);
+            end
+          else
+            begin
+              h5_prime_imag = temp2 * 16'b0000000010110100;
+            end
+              h5_prime_imag_16 = h5_prime_imag[23:8];
+          
+          if(temp3[15] == 1'b1)
+            begin
+              temp3 = -(temp3);
+              h7_prime_real = temp3 * 16'b0000000010110100;
+              h7_prime_real = -(h7_prime_real);
+            end
+          else
+            begin
+              h7_prime_real = temp3 * 16'b0000000010110100;
+            end
+              h7_prime_real_16 = h7_prime_real[23:8];
+          
+          if(temp4[15] == 1'b1)
+            begin
+              temp4 = -(temp4);
+              h7_prime_imag = temp4 * 16'b0000000010110100;
+              h7_prime_imag = -(h7_prime_imag);
+            end
+          else
+            begin
+              h7_prime_imag = temp4 * 16'b0000000010110100;
+            end
+              h7_prime_imag_16 = h7_prime_imag[23:8];
       
       i_real[0] = h_real[0] + h_real[4];  // i0_real = h0_real + h4_real
       i_imag[0] = h_imag[0] + h_imag[4];  // i0_imag = h0_imag + h4_imag
-      i_real[1] = h_real[1] + h5_prime_real;  // i1_real = h[1]_real + Re((W8 ^ 1)*h[5])
-      i_imag[1] = h_imag[1] + h5_prime_imag;  // i1_imag = h[1]_imag + Im((W8 ^ 1)*h[5])
+      i_real[1] = h_real[1] + h5_prime_real_16;  // i1_real = h[1]_real + Re((W8 ^ 1)*h[5])
+      i_imag[1] = h_imag[1] + h5_prime_imag_16;  // i1_imag = h[1]_imag + Im((W8 ^ 1)*h[5])
       i_real[2] = h_real[2] - (-(h_imag[6]));  // i2_real = h2_real - (j*h6_real)
       i_imag[2] = h_imag[2] - h_real[6];  // i2_imag = h2_imag - (j*h6_imag)
-      i_real[3] = h_real[3] + h7_prime_real;  // i3_real = h[3]_real + Re((W8^3)*h[7])
-      i_imag[3] = h_imag[3] + h7_prime_imag;  // i3_imag = h[3]_imag + Im((W8^3)*h[7]) 
+      i_real[3] = h_real[3] + h7_prime_real_16;  // i3_real = h[3]_real + Re((W8^3)*h[7])
+      i_imag[3] = h_imag[3] + h7_prime_imag_16;  // i3_imag = h[3]_imag + Im((W8^3)*h[7]) 
       i_real[4] = h_real[0] - h_real[4];  // i4_real = h0_real - h4_real
       i_imag[4] = h_imag[0] - h_imag[4];  // i4_imag = h0_imag - h4_imag
-      i_real[5] = h_real[1] - h5_prime_real;  // i5_real = h[1]_real - Re((W8^1)*h[5])
-      i_imag[5] = h_imag[1] - h5_prime_imag;  // i5_imag = h[1]_imag - Im((W8^1)*h[5])
+      i_real[5] = h_real[1] - h5_prime_real_16;  // i5_real = h[1]_real - Re((W8^1)*h[5])
+      i_imag[5] = h_imag[1] - h5_prime_imag_16;  // i5_imag = h[1]_imag - Im((W8^1)*h[5])
       i_real[6] = h_real[2] + (-(h_imag[6]));  // i6_real = h2_real + (j*h6_real)
       i_imag[6] = h_imag[2] + h_real[6];  // i6_imag = h2_imag + (j*h6_imag)
-      i_real[7] = h_real[3] - h7_prime_real;  // i7_real = h[3]_real - Re((W8^3)*h[7])
-      i_imag[7] = h_imag[3] - h7_prime_imag;  // i7_imag = h[3]_imag - Im((W8^3)*h[7])
+      i_real[7] = h_real[3] - h7_prime_real_16;  // i7_real = h[3]_real - Re((W8^3)*h[7])
+      i_imag[7] = h_imag[3] - h7_prime_imag_16;  // i7_imag = h[3]_imag - Im((W8^3)*h[7])
 
     end
 
