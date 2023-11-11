@@ -82,9 +82,7 @@ module main(
       h7_prime_real = temp3 * 16'b0000000010110100;
       temp4 = h_imag[7] + h_real[7];
       h7_prime_imag = (-temp4) * 16'b0000000010110100;
-      multiplier m1(.b_real(h_real[5]) , .b_imag(h_imag[5]) , .flag(1) , .result_real(h5_prime_real) , .result_imag(h5_prime_imag));  // h[5]_prime =  h[5] * (W8 ^ 1)
-      multiplier m2(.b_real(h_real[7]) , .b_imag(h_imag[7]) , .flag(0) , .result_real(h7_prime_real) , .result_imag(h7_prime_imag));  // h[7]_prime =  h[7] * (W8 ^ 3)
-
+      
       i_real[0] = h_real[0] + h_real[4];  // i0_real = h0_real + h4_real
       i_imag[0] = h_imag[0] + h_imag[4];  // i0_imag = h0_imag + h4_imag
       i_real[1] = h_real[1] + h5_prime_real;  // i1_real = h[1]_real + Re((W8 ^ 1)*h[5])
