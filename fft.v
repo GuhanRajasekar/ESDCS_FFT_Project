@@ -28,54 +28,55 @@ module multiplier(
       begin 
         if(flag) // flag 1 => multiplication with W8^1 = 0.707 - j0.707
           begin
-            assign result_1    = b_imag + b_real;
-            assign result_2    = b_imag - b_real;
+            result_1    = b_imag + b_real;
+            result_2    = b_imag - b_real;
             if(result_1[15] == 1'b1)
               begin
-                assign result_1 = -(result_1);
-                assign result_real_temp = 16'b0000000010110100 * (result_1);
-                assign result_real_temp = -(result_real_temp);
+                result_1 = -(result_1);
+                result_real_temp = 16'b0000000010110100 * (result_1);
+                result_real_temp = -(result_real_temp);
               end
             else
               begin
-                assign result_real_temp = 16'b0000000010110100 * (result_1);
+                result_real_temp = 16'b0000000010110100 * (result_1);
               end
             if(result_2[15] == 1'b1)
               begin
-                assign result_2 = -(result_2);
-                assign result_imag_temp = 16'b0000000010110100 * (result_2);
-                assign result_imag_temp = -(result_imag_temp);
+                result_2 = -(result_2);
+                result_imag_temp = 16'b0000000010110100 * (result_2);
+                result_imag_temp = -(result_imag_temp);
               end
             else
               begin
-                assign result_imag_temp = 16'b0000000010110100 * (result_2);
+                result_imag_temp = 16'b0000000010110100 * (result_2);
               end
           end
         
         
         else // flag 0 => multiplication with W8^3 = -(0.707 + j0.707)
          begin
-         assign result_1    =  b_imag - b_real;
-         assign result_2    = -(b_imag + b_real);
+         result_1    =  b_imag - b_real;
+         result_2    = -(b_imag + b_real);
             if(result_1[15] == 1'b1)
               begin
-                assign result_1 = -(result_1);
-                assign result_real_temp = 16'b0000000010110100 * (result_1);
-                assign result_real_temp = -(result_real_temp);
+                result_1 = -(result_1);
+                result_real_temp = 16'b0000000010110100 * (result_1);
+                result_real_temp = -(result_real_temp);
+
               end
             else
               begin
-                assign result_real_temp = 16'b0000000010110100 * (result_1);
+                result_real_temp = 16'b0000000010110100 * (result_1);
               end
             if(result_2[15] == 1'b1)
               begin
-                assign result_2 = -(result_2);
-                assign result_imag_temp = 16'b0000000010110100 * (result_2);
-                assign result_imag_temp = -(result_imag_temp);
+                result_2 = -(result_2);
+                result_imag_temp = 16'b0000000010110100 * (result_2);
+                result_imag_temp = -(result_imag_temp);
               end
             else
               begin
-                assign result_imag_temp = 16'b0000000010110100 * (result_2);
+                result_imag_temp = 16'b0000000010110100 * (result_2);
               end
           end
 
@@ -93,14 +94,14 @@ module main(
   input [15:0]  in5_real  , input [15:0] in5_imag,
   input [15:0]  in6_real  , input [15:0] in6_imag,
   input [15:0]  in7_real  , input [15:0] in7_imag,
-  output [15:0] out0_real , output [15:0] reg out0_imag,
-  output [15:0] out1_real , output [15:0] reg out1_imag,
-  output [15:0] out2_real , output [15:0] reg out2_imag,
-  output [15:0] out3_real , output [15:0] reg out3_imag,
-  output [15:0] out4_real , output [15:0] reg out4_imag,
-  output [15:0] out5_real , output [15:0] reg out5_imag,
-  output [15:0] out6_real , output [15:0] reg out6_imag,
-  output [15:0] out7_real , output [15:0] reg out6_imag,
+  output [15:0] out0_real , output [15:0] out0_imag,
+  output [15:0] out1_real , output [15:0] out1_imag,
+  output [15:0] out2_real , output [15:0] out2_imag,
+  output [15:0] out3_real , output [15:0] out3_imag,
+  output [15:0] out4_real , output [15:0] out4_imag,
+  output [15:0] out5_real , output [15:0] out5_imag,
+  output [15:0] out6_real , output [15:0] out6_imag,
+  output [15:0] out7_real , output [15:0] out6_imag,
 );
   wire [15:0] g_real [0:7];   // Declare g_real as an array of registers to store real part of stage 1 results
   wire [15:0] g_imag [0:7];   // Declare g_imag as an array of registers to store imag part of stage 1 results
@@ -170,6 +171,7 @@ module main(
   stage1 inst_i7_imag (.x(h_imag[3]), .y(h7_prime_imag), .flag(0), .z(i_imag[7]));  // i7_imag = h[3]_imag - Im((W8^3)*h[7])
 
   // Final step is store the values from the wires to register variables
+
   always@*
    begin
      out0_real = i_real[0]; out0_imag = i_imag[0];
@@ -181,5 +183,7 @@ module main(
      out6_real = i_real[0]; out6_imag = i_imag[0];
      out7_real = i_real[0]; out7_imag = i_imag[0];
    end
+
+
 
 endmodule

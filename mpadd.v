@@ -1,7 +1,5 @@
 `timescale 1ns/1ps
 
-
-
 module mpadd256_parallel (CLK, RST_N, s_out, a_in, b_in, write, start, ready);
 	input CLK, RST_N;
 	input [255:0] a_in, b_in;
