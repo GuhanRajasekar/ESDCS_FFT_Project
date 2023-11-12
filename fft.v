@@ -34,15 +34,6 @@ module main(
   reg [15:0] h7_prime_real_16;  // 16 bit register to store real part of h[7] * (W8 ^ 3)
   reg [15:0] h7_prime_imag_16;  // 16 bit register to store imag part of h[7] * (W8 ^ 3)
 
-  assign out0_real = i_real[0]; assign out0_imag = i_imag[0];
-  assign out1_real = i_real[0]; assign out1_imag = i_imag[0];
-  assign out2_real = i_real[0]; assign out2_imag = i_imag[0];
-  assign out3_real = i_real[0]; assign out3_imag = i_imag[0];
-  assign out4_real = i_real[0]; assign out4_imag = i_imag[0];
-  assign out5_real = i_real[0]; assign out5_imag = i_imag[0];
-  assign out6_real = i_real[0]; assign out6_imag = i_imag[0];
-  assign out7_real = i_real[0]; assign out7_imag = i_imag[0];
-
   always
     begin
       g_real[0] = in0_real + in4_real;
@@ -149,8 +140,15 @@ module main(
       i_imag[6] = h_imag[2] + h_real[6];  // i6_imag = h2_imag + (j*h6_imag)
       i_real[7] = h_real[3] - h7_prime_real_16;  // i7_real = h[3]_real - Re((W8^3)*h[7])
       i_imag[7] = h_imag[3] - h7_prime_imag_16;  // i7_imag = h[3]_imag - Im((W8^3)*h[7])
-
     end
 
+  assign out0_real = i_real[0]; assign out0_imag = i_imag[0];
+  assign out1_real = i_real[0]; assign out1_imag = i_imag[0];
+  assign out2_real = i_real[0]; assign out2_imag = i_imag[0];
+  assign out3_real = i_real[0]; assign out3_imag = i_imag[0];
+  assign out4_real = i_real[0]; assign out4_imag = i_imag[0];
+  assign out5_real = i_real[0]; assign out5_imag = i_imag[0];
+  assign out6_real = i_real[0]; assign out6_imag = i_imag[0];
+  assign out7_real = i_real[0]; assign out7_imag = i_imag[0];
 
 endmodule
