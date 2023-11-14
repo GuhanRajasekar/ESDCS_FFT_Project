@@ -1,28 +1,28 @@
-module main(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag, 
-  in2_real  ,in2_imag, in3_real  ,in3_imag, in4_real  ,in4_imag, in5_real  ,in5_imag
-  , in6_real  ,in6_imag, in7_real  ,in7_imag, ready, out0_real ,out0_imag, out1_real 
-  ,out1_imag, out2_real ,out2_imag, out3_real ,out3_imag, out4_real ,out4_imag, 
-  out5_real ,out5_imag, out6_real ,out6_imag, out7_real ,out7_imag);
+module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag, 
+ in2_real  ,in2_imag, in3_real  ,in3_imag, in4_real  ,in4_imag, in5_real  ,in5_imag,
+ in6_real  ,in6_imag, in7_real  ,in7_imag, ready, out0_real ,out0_imag, out1_real, 
+ out1_imag, out2_real ,out2_imag, out3_real ,out3_imag, out4_real ,out4_imag, 
+ out5_real ,out5_imag, out6_real ,out6_imag, out7_real ,out7_imag);
 
   input CLK, RST_N;
   input write, start;
-  input signed wire [15:0]  in0_real  ,in0_imag;
-  input signed wire [15:0]  in1_real  ,in1_imag;
-  input signed wire [15:0]  in2_real  ,in2_imag;
-  input signed wire [15:0]  in3_real  ,in3_imag;
-  input signed wire [15:0]  in4_real  ,in4_imag;
-  input signed wire [15:0]  in5_real  ,in5_imag;
-  input signed wire [15:0]  in6_real  ,in6_imag;
-  input signed wire [15:0]  in7_real  ,in7_imag;
+  input wire signed [15:0]  in0_real  ,in0_imag;
+  input wire signed [15:0]  in1_real  ,in1_imag;
+  input wire signed [15:0]  in2_real  ,in2_imag;
+  input wire signed [15:0]  in3_real  ,in3_imag;
+  input wire signed [15:0]  in4_real  ,in4_imag;
+  input wire signed [15:0]  in5_real  ,in5_imag;
+  input wire signed [15:0]  in6_real  ,in6_imag;
+  input wire signed [15:0]  in7_real  ,in7_imag;
   output reg ready;
-  output signed wire [15:0] out0_real ,out0_imag;
-  output signed wire [15:0] out1_real ,out1_imag;
-  output signed wire [15:0] out2_real ,out2_imag;
-  output signed wire [15:0] out3_real ,out3_imag;
-  output signed wire [15:0] out4_real ,out4_imag;
-  output signed wire [15:0] out5_real ,out5_imag;
-  output signed wire [15:0] out6_real ,out6_imag;
-  output signed wire [15:0] out7_real ,out7_imag;
+  output wire signed [15:0] out0_real ,out0_imag;
+  output wire signed [15:0] out1_real ,out1_imag;
+  output wire signed [15:0] out2_real ,out2_imag;
+  output wire signed [15:0] out3_real ,out3_imag;
+  output wire signed [15:0] out4_real ,out4_imag;
+  output wire signed [15:0] out5_real ,out5_imag;
+  output wire signed [15:0] out6_real ,out6_imag;
+  output wire signed [15:0] out7_real ,out7_imag;
 
   reg signed [15:0] i0_real, i0_imag;
   reg signed [15:0] i1_real, i1_imag;
@@ -105,10 +105,10 @@ module main(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
             h_imag[7] <= g_imag[5] + g_real[7];        // h7_imag = g5_imag + (j*g7_imag)
           end
           2'b10:begin
-            h5_prime_real_16 <= ((h_real[5] + h_imag[5]) * 16'b0000000010110100)[23:8];
-            h5_prime_imag_16 <= ((h_imag[5] - h_real[5]) * 16'b0000000010110100)[23:8];
-            h7_prime_real_16 <= ((h_imag[7] - h_real[7]) * 16'b0000000010110100)[23:8];
-            h7_prime_imag_16 <= ((-(h_imag[7] + h_real[7])) * 16'b0000000010110100)[23:8];
+            h5_prime_real <= (h_real[5] + h_imag[5]) * 16'b0000000010110100;
+            h5_prime_imag <= (h_imag[5] - h_real[5]) * 16'b0000000010110100;
+            h7_prime_real <= (h_imag[7] - h_real[7]) * 16'b0000000010110100;
+            h7_prime_imag <= (-(h_imag[7] + h_real[7])) * 16'b0000000010110100;
           end
           2'b11:begin
             i_real[0] <= h_real[0] + h_real[4];  // i0_real = h0_real + h4_real
@@ -147,6 +147,13 @@ module main(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
 			end
 		end
 	end
+
+always@(*) begin
+  h5_prime_real_16 <= h5_prime_real[23:8];
+  h5_prime_imag_16 <= h5_prime_imag[23:8];
+  h7_prime_real_16 <= h7_prime_real[23:8];
+  h7_prime_imag_16 <= h7_prime_imag[23:8];
+end
 
   assign out0_real = i_real[0]; assign out0_imag = i_imag[0];
   assign out1_real = i_real[1]; assign out1_imag = i_imag[1];
