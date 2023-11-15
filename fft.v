@@ -32,7 +32,7 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
   reg signed [15:0] i5_real, i5_imag;
   reg signed [15:0] i6_real, i6_imag;
   reg signed [15:0] i7_real, i7_imag;
-  reg signed [1:0] stage;
+  reg [2:0] stage;
 
   reg signed [15:0] g_real [0:7];   // Declare g_real as an array of registers to store real part of stage 1 results
   reg signed [15:0] g_imag [0:7];   // Declare g_imag as an array of registers to store imag part of stage 1 results
@@ -41,7 +41,7 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
   reg signed [15:0] i_real [0:7];   // Declare i_real as an array of registers to store real part of stage 3 results
   reg signed [15:0] i_imag [0:7];   // Declare i_imag as an array of registers to store imag part of stage 3 results
 
-  reg signed [15:0] temp1,temp2,temp3,temp4;
+  reg signed [15:0] temp1,temp2,temp3,temp0;
   reg signed [31:0] h5_prime_real;  // 32 bit register to store real part of h[5] * (W8 ^ 1)
   reg signed [31:0] h5_prime_imag;  // 32 bit register to store imag part of h[5] * (W8 ^ 1)
   reg signed [31:0] h7_prime_real;  // 32 bit register to store real part of h[7] * (W8 ^ 3)
@@ -68,7 +68,7 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
 		else begin
 			if (start) begin
 				case(stage)
-          2'b00: begin
+          3'b000: begin
             g_real[0] <= i0_real + i4_real;
             g_imag[0] <= i0_imag + i4_imag;
             g_real[1] <= i0_real - i4_real;
@@ -86,36 +86,42 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
             g_real[7] <= i3_real - i7_real;
             g_imag[7] <= i3_imag - i7_imag; 
           end
-          2'b01:begin
+          3'b001:begin
             h_real[0] <= g_real[0] + g_real[2];        // h0_real = g0_real + g2_real
             h_imag[0] <= g_imag[0] + g_imag[2];        // h0_imag = g0_imag + g2_imag
-            h_real[1] <= g_real[1] - (-(g_imag[3]));   // h1_real = g1_real - (j*g3_real)  
+            h_real[1] <= g_real[1] + g_imag[3];   // h1_real = g1_real - (j*g3_real)  
             h_imag[1] <= g_imag[1] - g_real[3];        // h1_imag = g1_imag - (j*g3_imag)
             h_real[2] <= g_real[0] - g_real[2];        // h2_real = g0_real - g2_real
             h_imag[2] <= g_imag[0] - g_imag[2];        // h2_imag = g0_imag - g2_imag
-            h_real[3] <= g_real[1] + (-(g_imag[3]));   // h3_real = g1_real + (j*g3_real)
+            h_real[3] <= g_real[1] - g_imag[3];   // h3_real = g1_real + (j*g3_real)
             h_imag[3] <= g_imag[1] + g_real[3];        // h3_imag = g1_imag + (j*g3_imag)
             h_real[4] <= g_real[4] + g_real[6];        // h4_real = g4_real + g6_real
             h_imag[4] <= g_imag[4] + g_imag[6];        // h4_imag = g4_imag + g6_imag
-            h_real[5] <= g_real[5] - (-(g_imag[7]));   // h5_real = g5_real - (j*g7_real)
+            h_real[5] <= g_real[5] + g_imag[7];   // h5_real = g5_real - (j*g7_real)
             h_imag[5] <= g_imag[5] - g_real[7];        // h5_imag = g5_imag - (j*g7_imag)
             h_real[6] <= g_real[4] - g_real[6];        // h6_real = g4_real - g6_real
             h_imag[6] <= g_imag[4] - g_imag[6];        // h6_imag = g4_imag - g6_imag
-            h_real[7] <= g_real[5] + (-(g_imag[7]));   // h7_real = g5_real + (j*g7_real)
+            h_real[7] <= g_real[5] - g_imag[7];   // h7_real = g5_real + (j*g7_real)
             h_imag[7] <= g_imag[5] + g_real[7];        // h7_imag = g5_imag + (j*g7_imag)
           end
-          2'b10:begin
-            h5_prime_real <= (h_real[5] + h_imag[5]) * 16'b0000000010110100;
-            h5_prime_imag <= (h_imag[5] - h_real[5]) * 16'b0000000010110100;
-            h7_prime_real <= (h_imag[7] - h_real[7]) * 16'b0000000010110100;
-            h7_prime_imag <= (-(h_imag[7] + h_real[7])) * 16'b0000000010110100;
+          3'b010:begin
+            temp0 <= h_real[5] + h_imag[5];
+            temp1 <= h_imag[5] - h_real[5];
+            temp2 <= h_imag[7] - h_real[7];
+            temp3 <= (-(h_imag[7] + h_real[7]));
           end
-          2'b11:begin
+          3'b011:begin
+            h5_prime_real <= temp0 * 16'b0000000010110100;
+            h5_prime_imag <= temp1 * 16'b0000000010110100;
+            h7_prime_real <= temp2 * 16'b0000000010110100;
+            h7_prime_imag <= temp3 * 16'b0000000010110100;
+          end
+          3'b100:begin
             i_real[0] <= h_real[0] + h_real[4];  // i0_real = h0_real + h4_real
             i_imag[0] <= h_imag[0] + h_imag[4];  // i0_imag = h0_imag + h4_imag
             i_real[1] <= h_real[1] + h5_prime_real_16;  // i1_real = h[1]_real + Re((W8 ^ 1)*h[5])
             i_imag[1] <= h_imag[1] + h5_prime_imag_16;  // i1_imag = h[1]_imag + Im((W8 ^ 1)*h[5])
-            i_real[2] <= h_real[2] - (-(h_imag[6]));  // i2_real = h2_real - (j*h6_real)
+            i_real[2] <= h_real[2] + h_imag[6];  // i2_real = h2_real - (j*h6_real)
             i_imag[2] <= h_imag[2] - h_real[6];  // i2_imag = h2_imag - (j*h6_imag)
             i_real[3] <= h_real[3] + h7_prime_real_16;  // i3_real = h[3]_real + Re((W8^3)*h[7])
             i_imag[3] <= h_imag[3] + h7_prime_imag_16;  // i3_imag = h[3]_imag + Im((W8^3)*h[7]) 
@@ -123,7 +129,7 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
             i_imag[4] <= h_imag[0] - h_imag[4];  // i4_imag = h0_imag - h4_imag
             i_real[5] <= h_real[1] - h5_prime_real_16;  // i5_real = h[1]_real - Re((W8^1)*h[5])
             i_imag[5] <= h_imag[1] - h5_prime_imag_16;  // i5_imag = h[1]_imag - Im((W8^1)*h[5])
-            i_real[6] <= h_real[2] + (-(h_imag[6]));  // i6_real = h2_real + (j*h6_real)
+            i_real[6] <= h_real[2] - h_imag[6];  // i6_real = h2_real + (j*h6_real)
             i_imag[6] <= h_imag[2] + h_real[6];  // i6_imag = h2_imag + (j*h6_imag)
             i_real[7] <= h_real[3] - h7_prime_real_16;  // i7_real = h[3]_real - Re((W8^3)*h[7])
             i_imag[7] <= h_imag[3] - h7_prime_imag_16;  // i7_imag = h[3]_imag - Im((W8^3)*h[7])
