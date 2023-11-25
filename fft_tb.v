@@ -3,7 +3,7 @@
 
 module fft_tb();
 
-	parameter CLOCK_PERIOD = 100; // 10 MHz clock
+	parameter CLOCK_PERIOD = 5; // 10 MHz clock
 
     reg sys_clk, sys_rst_n;
 	reg write, start;
