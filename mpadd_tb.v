@@ -1,5 +1,5 @@
+`include "mpadd.v"
 `timescale 1ns/1ps
-
 // 256-bit LFSR for pseudo-random number generation
 module lfsr_256 (CLK, RST_N, state, init_val, en);
 	
@@ -47,7 +47,7 @@ module mpadd_tb ();
 	lfsr_256 u_lfsr_b (.CLK(sys_clk), .RST_N(sys_rst_n), .state(b), .init_val(256'h4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5), .en(en_b));
 
 	// Modify the module name for the design being tested
-	mpadd256 u_DUT (.CLK(sys_clk), .RST_N(sys_rst_n), .s_out(s_out), .a_in(a), .b_in(b), .write(write), .start(start), .ready(ready));
+	mpadd256_serial u_DUT (.CLK(sys_clk), .RST_N(sys_rst_n), .s_out(s_out), .a_in(a), .b_in(b), .write(write), .start(start), .ready(ready));
 
 	assign s_golden = {1'b0, a} + {1'b0, b};
 

@@ -67,25 +67,26 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
 		end
 		else begin
 			if (start) begin
+        g_real[0] <= i0_real + i4_real;
+        g_imag[0] <= i0_imag + i4_imag;
+        g_real[1] <= i0_real - i4_real;
+        g_imag[1] <= i0_imag - i4_imag;
+        g_real[2] <= i2_real + i6_real;
+        g_imag[2] <= i2_imag + i6_imag;
+        g_real[3] <= i2_real - i6_real;
+        g_imag[3] <= i2_imag - i6_imag;
+        g_real[4] <= i1_real + i5_real;
+        g_imag[4] <= i1_imag + i5_imag;
+        g_real[5] <= i1_real - i5_real;
+        g_imag[5] <= i1_imag - i5_imag;
+        g_real[6] <= i3_real + i7_real;
+        g_imag[6] <= i3_imag + i7_imag;
+        g_real[7] <= i3_real - i7_real;
+        g_imag[7] <= i3_imag - i7_imag; 
+        stage <= 3'b01;
+      end
+      else if (stage > 0 ) begin
 				case(stage)
-          3'b000: begin
-            g_real[0] <= i0_real + i4_real;
-            g_imag[0] <= i0_imag + i4_imag;
-            g_real[1] <= i0_real - i4_real;
-            g_imag[1] <= i0_imag - i4_imag;
-            g_real[2] <= i2_real + i6_real;
-            g_imag[2] <= i2_imag + i6_imag;
-            g_real[3] <= i2_real - i6_real;
-            g_imag[3] <= i2_imag - i6_imag;
-            g_real[4] <= i1_real + i5_real;
-            g_imag[4] <= i1_imag + i5_imag;
-            g_real[5] <= i1_real - i5_real;
-            g_imag[5] <= i1_imag - i5_imag;
-            g_real[6] <= i3_real + i7_real;
-            g_imag[6] <= i3_imag + i7_imag;
-            g_real[7] <= i3_real - i7_real;
-            g_imag[7] <= i3_imag - i7_imag; 
-          end
           3'b001:begin
             h_real[0] <= g_real[0] + g_real[2];        // h0_real = g0_real + g2_real
             h_imag[0] <= g_imag[0] + g_imag[2];        // h0_imag = g0_imag + g2_imag
@@ -136,7 +137,14 @@ module fft(CLK, RST_N, write, start, in0_real , in0_imag, in1_real, in1_imag,
             ready <= 1'b1;
           end
         endcase
-				stage <= stage + 2'b01;
+
+        if(stage == 3'b100) begin
+          stage <= 2'b00;
+        end
+        else begin
+          stage <= stage + 2'b01;
+        end
+        
 			end
 			else begin
 				if (write) begin

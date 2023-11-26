@@ -59,6 +59,7 @@ module fft_tb();
 		#CLOCK_PERIOD sys_rst_n = 1'b1;
 		#CLOCK_PERIOD write = 1'b1;
 		#CLOCK_PERIOD start = 1'b1;
+		#CLOCK_PERIOD start = 1'b0;
 		#(CLOCK_PERIOD/2) $display("START OF SIMULATION (Time: %g ns)", $time);
 		#10000;
 		$finish;
