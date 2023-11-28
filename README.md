@@ -13,7 +13,7 @@ Project for the partial grading of Course: Efficient and Secure Digital Systems
 - Input 𝑥 = {𝑥0, 𝑥1, ⋯ , 𝑥7}
 - Output 𝑋 = {𝑋0, 𝑋1, ⋯ , 𝑋7}
 - Output 𝑋 is the 8-point FFT of input x
-- Each input element 𝑥𝑚 (for 𝑚 = 0,1, … , 7 ) is a complex number with real and imaginary parts each represented as a signed 16-bit fixedpoint quantity with 1 sign bit, 7 bits for decimal part and 8 bits for fractional part
+- Each input element 𝑥𝑚 (for 𝑚 = 0,1, … , 7 ) is a complex number with real and imaginary parts each represented as a signed 16-bit fixed point quantity with 1 sign bit, 7 bits for decimal part and 8 bits for fractional part
 - Each output element 𝑋𝑘 (for 𝑘 = 0,1, … , 7 ) is a complex number with real and imaginary parts each represented as a signed 16-bit fixed-point quantity with 1 sign bit, 7 bits for decimal part and 8 bits for fractional part
 - Additional Signals
     - |CLK |Input| Clock| signal|
